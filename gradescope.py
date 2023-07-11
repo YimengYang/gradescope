@@ -1,5 +1,6 @@
+import conda 
 import mechanize
-import cookielib
+import http.cookiejar
 import html2text
 from bs4 import BeautifulSoup
 import os
@@ -7,7 +8,7 @@ import os
 br = mechanize.Browser()
 
 # Cookie Jar
-cj = cookielib.LWPCookieJar()
+cj = http.cookiejar.LWPCookieJar()
 br.set_cookiejar(cj)
 
 # Browser options
@@ -25,6 +26,7 @@ br.open('https://gradescope.com/login')
 base_url = "https://gradescope.com"
 #br.open('https://github.com/login')
 # View available forms
+
 for f in br.forms():
     #print(f)
 
@@ -32,12 +34,21 @@ for f in br.forms():
     br.select_form(nr=0)
 
     # User credentials
-    br.form['session[email]'] = #TODO: Fill in email
-    br.form['session[password]'] = #TODO: Fill in password
+    br.form['session[email]'] = "aaparvat@ucsd.edu" #TODO: Fill in email
+    br.form['session[password]'] = "Sunandanavya123$" #TODO: Fill in password
 
     # Login
     br.submit()
 
+    # should click older courses here
+    soup = BeautifulSoup(br.response().read(), 'html.parser')
+    older_courses_button = soup.find('button', {'class': 'tiiBtn tiiBtn-primaryLink js-viewInactive'})
+
+    if older_courses_button:
+        # Submit the form associated with the button
+        br.select_form(nr=0)  # Assuming it's the first form
+        br.submit()
+    #
     soup = BeautifulSoup(br.open('https://gradescope.com/account').read())
     
     courseBoxes = soup.find_all('a', {'class':'courseBox'})
